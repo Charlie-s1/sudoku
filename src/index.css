@@ -1,0 +1,49 @@
+body{
+    background: #12181b;
+    font-family: sans-serif;
+}
+#game{
+    display: inline-block;
+    position: absolute;
+    left:50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+}
+#board{
+    display: grid;
+    grid-template-columns: repeat(3,1fr 1fr 1.2fr);
+    grid-template-rows: repeat(3,1fr 1fr 1.2fr);
+}
+#guessOpt{
+    position: relative;
+    left: -.2rem;
+    top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(9,1fr);
+}
+#guessOpt > p{
+    cursor: pointer;
+    /* padding-bottom:.25rem; */
+}
+.lock{
+    background: #343738;
+}
+.digitCont, #guessOpt > p{
+    font-family: sans-serif;
+    color: white;
+    margin:.1rem;
+    width:2rem;
+    height:2rem;
+    font-size: 2rem;
+    text-align: center;
+}
+.digitCont{
+    border:#343738 .5px solid;
+}
+.digit{
+    position: relative;
+    top:-2.2rem;
+}
+.digit:focus{
+    outline: none;
+}
