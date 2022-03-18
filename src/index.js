@@ -36,6 +36,7 @@ const sets = [[
     [60,61,62,69,70,71,78,79,80],
 ]];
 let holding = "";
+let guide = true;
 
 function Digit(props){
     const [{isOver}, drop] = useDrop( () => ({
@@ -46,12 +47,13 @@ function Digit(props){
         collect: monitor => ({
             isOver: monitor.isOver()
         })
-    }))
+    }));
+    
     if (!props.lock){
         return(
-            <div className="digitCont" ref={drop}>
+            <div className={props.highLight ? "digitCont highLight" : "digitCont"} ref={drop}>
                 {isOver ?
-                    <p className="digit" style={{opacity:.2}}>{props.value || holding}</p> :
+                    <p onDragEnter={props.hovering} className="digit" style={{opacity:.2}}>{props.value || holding}</p> :
                     <p className="digit">{props.value}</p>
                 }
             </div>   
@@ -72,7 +74,9 @@ class Board extends React.Component{
             number={i}
             value={this.props.numbers[i]}
             lock={this.props.numLock[i]}
+            highLight={this.props.highLight[i]}
             dropped = {(i,n) => this.props.dropped(i,n)}
+            hovering = {() => this.props.hovering(i)}
         />)
     }
     renderBox(){
@@ -114,6 +118,7 @@ class Game extends React.Component{
         this.state = {
             numbers:Array(81).fill(null),
             numLock:Array(81).fill(false),
+            numHighlight:Array(81).fill(false),
         }
         let start = createGameStart(this.state.numbers);
         this.state.numbers = start.newNums;
@@ -122,17 +127,43 @@ class Game extends React.Component{
     handleDropped(i,n){
         const newNumbers = this.state.numbers.slice();
         newNumbers[n] = +i;
+
         this.setState({
+            numHighlight:Array(81).fill(false),
             numbers:newNumbers,
         });
     }
+    reset(e){
+        console.log("reset");
+        this.setState({numHighlight:Array(81).fill(false)})
+    }
+    handleHover(n){
+        this.numHighlight = Array(81).fill(false);
+        let newHighLight = Array(81).fill(false);
+        let nInside = [];
+        for(const set of sets){
+            set.map((i) => {
+                if (i.includes(n)){
+                    nInside.push(i);
+                }
+            });
+        }
+        for(n of nInside){
+            n.map((i) => newHighLight[i] = true);
+        }
+        if(guide){
+            this.setState({numHighlight:newHighLight});
+        }
+    }
     render(){
         return(
-            <div id="game">
+            <div id="game" onMouseLeave={(e)=>this.reset(e)}>
                 <Board
                     numbers={this.state.numbers}
                     numLock={this.state.numLock}
+                    highLight={this.state.numHighlight}
                     dropped={(i,n) => this.handleDropped(i,n)}
+                    hovering={(n) => this.handleHover(n)}
                 />
                 <div id="guessOpt">
                     <GuessNum value="1"/>
